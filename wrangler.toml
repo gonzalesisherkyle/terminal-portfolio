@@ -1,0 +1,6 @@
+name = "terminal-portfolio"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-05-14"
+
+[vars]
+VITE_API_URL = "https://portfolio-api.isher.dev/api"
