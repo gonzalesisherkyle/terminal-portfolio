@@ -6,6 +6,7 @@ import TerminalReady from '../components/TerminalReady';
 import SectionDivider from '../components/SectionDivider';
 import StatusBar from '../components/StatusBar';
 import FeaturedProjects from '../components/FeaturedProjects';
+import ResumeLink from '../components/ResumeLink';
 import { getAbout } from '../api/about';
 import { getProjects } from '../api/projects';
 
@@ -62,6 +63,7 @@ export default function Home() {
               <OutputLine label="name" value={about.name} variant="bright" />
               <OutputLine label="role" value={about.title} variant="cyan" />
               <OutputLine label="mode" value="full-stack javascript" variant="amber" />
+              <ResumeLink href={about.resumeUrl} />
               <SectionDivider />
               <OutputLine value={about.bioSnippet || about.bio} multiline justify />
             </>

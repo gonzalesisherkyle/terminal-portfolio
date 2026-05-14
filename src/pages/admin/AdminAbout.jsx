@@ -12,6 +12,7 @@ const blankAbout = {
   title: '',
   bio: '',
   bioSnippet: '',
+  resumeUrl: '',
   location: '',
   availability: 'available'
 };
@@ -36,6 +37,7 @@ export default function AdminAbout() {
             title: about.title || '',
             bio: about.bio || '',
             bioSnippet: about.bioSnippet || '',
+            resumeUrl: about.resumeUrl || '',
             location: about.location || '',
             availability: about.availability || 'available'
           });
@@ -62,6 +64,7 @@ export default function AdminAbout() {
         title: saved.title || '',
         bio: saved.bio || '',
         bioSnippet: saved.bioSnippet || '',
+        resumeUrl: saved.resumeUrl || '',
         location: saved.location || '',
         availability: saved.availability || 'available'
       });
@@ -83,6 +86,7 @@ export default function AdminAbout() {
         </div>
         <TerminalField label="bioSnippet" value={form.bioSnippet} onChange={(value) => updateField('bioSnippet', value)} multiline />
         <TerminalField label="fullBio" value={form.bio} onChange={(value) => updateField('bio', value)} multiline />
+        <TerminalField label="resumeUrl" value={form.resumeUrl} onChange={(value) => updateField('resumeUrl', value)} placeholder="https://example.com/resume.pdf or /resume.pdf" />
         <div className="grid md:grid-cols-2 gap-3">
           <TerminalField label="location" value={form.location} onChange={(value) => updateField('location', value)} />
           <TerminalField label="availability" value={form.availability} options={availabilityOptions} onChange={(value) => updateField('availability', value)} />

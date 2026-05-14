@@ -1,3 +1,5 @@
+import TerminalLink from './TerminalLink';
+
 export default function ProjectCard({ project }) {
   return (
     <article className="relative border border-term-border rounded-sm px-4 py-3 my-2 transition-all duration-200 group hover:border-term-green/40 hover:bg-term-green/[0.02]">
@@ -15,24 +17,14 @@ export default function ProjectCard({ project }) {
       ) : null}
       <div className="flex flex-wrap gap-3 text-xs">
         {project.liveUrl ? (
-          <a
-            className="text-term-cyan border-b border-dashed border-term-cyan/30 hover:text-term-bright hover:border-term-cyan transition-all duration-200"
-            href={project.liveUrl}
-            target="_blank"
-            rel="noreferrer"
-          >
+          <TerminalLink href={project.liveUrl} size="xs">
             ./live
-          </a>
+          </TerminalLink>
         ) : null}
         {project.repoUrl ? (
-          <a
-            className="text-term-cyan border-b border-dashed border-term-cyan/30 hover:text-term-bright hover:border-term-cyan transition-all duration-200"
-            href={project.repoUrl}
-            target="_blank"
-            rel="noreferrer"
-          >
+          <TerminalLink href={project.repoUrl} size="xs">
             ./repo
-          </a>
+          </TerminalLink>
         ) : null}
       </div>
     </article>
