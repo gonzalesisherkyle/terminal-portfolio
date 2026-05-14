@@ -2,7 +2,7 @@ import OutputLine from './OutputLine';
 import ProjectCard from './ProjectCard';
 import Prompt from './Prompt';
 
-export default function FeaturedProjects({ projects = [], limit = 2 }) {
+export default function FeaturedProjects({ projects = [], limit = 3 }) {
   const allFeaturedProjects = projects.filter((project) => project.featured);
   const featuredProjects = allFeaturedProjects.slice(0, limit);
 
