@@ -7,6 +7,7 @@ import CommandButton from '../../components/CommandButton';
 import ProjectCard from '../../components/ProjectCard';
 import Pagination from '../../components/Pagination';
 import TerminalModal from '../../components/TerminalModal';
+import TerminalLoader from '../../components/TerminalLoader';
 import { createProject, deleteProject, getProjects, updateProject } from '../../api/projects';
 import { usePagination } from '../../hooks/usePagination';
 import { getApiError } from '../../utils/validate';
@@ -26,14 +27,24 @@ export default function AdminProjects() {
   const [form, setForm] = useState(blankProject);
   const [editingId, setEditingId] = useState('');
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
   const pagination = usePagination(projects, 6);
 
   const loadProjects = () => {
+    setLoading(true);
+    setLoadError('');
     getProjects()
-      .then(setProjects)
-      .catch(() => setProjects([]));
+      .then((projectData) => {
+        setProjects(projectData);
+      })
+      .catch((requestError) => {
+        setProjects([]);
+        setLoadError(getApiError(requestError, 'Projects load failed'));
+      })
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -131,11 +142,18 @@ export default function AdminProjects() {
     <AdminShell path="~/portfolio/admin/projects">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Prompt path="~/portfolio/admin/projects" cmd="ls ./projects" />
-        <CommandButton onClick={openCreate}>add project</CommandButton>
+        <CommandButton onClick={openCreate} disabled={loading}>add project</CommandButton>
       </div>
       {status ? <OutputLine value={status} variant="green" /> : null}
       {!isEditorOpen && error ? <OutputLine value={error} variant="red" /> : null}
-      {projects.length ? (
+      {loadError ? <OutputLine value={loadError} variant="red" /> : null}
+      {loading ? (
+        <TerminalLoader value="loading projects..." />
+      ) : loadError ? (
+        <div className="mt-3">
+          <CommandButton onClick={loadProjects}>retry</CommandButton>
+        </div>
+      ) : projects.length ? (
         <>
           {pagination.items.map((project) => (
             <div key={project._id}>

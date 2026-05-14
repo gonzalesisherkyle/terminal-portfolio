@@ -6,6 +6,7 @@ import TerminalField from '../../components/TerminalField';
 import CommandButton from '../../components/CommandButton';
 import AdminSkillRow from '../../components/AdminSkillRow';
 import TerminalModal from '../../components/TerminalModal';
+import TerminalLoader from '../../components/TerminalLoader';
 import { createSkill, deleteSkill, getSkills, updateSkill } from '../../api/skills';
 import { flattenSkillGroups, groupSkillsByCategory } from '../../utils/terminal';
 import { getApiError, validateSkillPayload } from '../../utils/validate';
@@ -20,6 +21,8 @@ export default function AdminSkills() {
   const [form, setForm] = useState(blankSkill);
   const [editingId, setEditingId] = useState('');
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
 
@@ -27,9 +30,17 @@ export default function AdminSkills() {
   const groupedSkills = useMemo(() => groupSkillsByCategory(flatSkills), [flatSkills]);
 
   const loadSkills = () => {
+    setLoading(true);
+    setLoadError('');
     getSkills()
-      .then(setGroups)
-      .catch(() => setGroups([]));
+      .then((skillGroups) => {
+        setGroups(skillGroups);
+      })
+      .catch((requestError) => {
+        setGroups([]);
+        setLoadError(getApiError(requestError, 'Skills load failed'));
+      })
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -121,11 +132,18 @@ export default function AdminSkills() {
     <AdminShell path="~/portfolio/admin/skills">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Prompt path="~/portfolio/admin/skills" cmd="ls ./skills --grouped" />
-        <CommandButton onClick={openCreate}>add skill</CommandButton>
+        <CommandButton onClick={openCreate} disabled={loading}>add skill</CommandButton>
       </div>
       {status ? <OutputLine value={status} variant="green" /> : null}
       {!isEditorOpen && error ? <OutputLine value={error} variant="red" /> : null}
-      {groupedSkills.length ? (
+      {loadError ? <OutputLine value={loadError} variant="red" /> : null}
+      {loading ? (
+        <TerminalLoader value="loading skills..." />
+      ) : loadError ? (
+        <div className="mt-3">
+          <CommandButton onClick={loadSkills}>retry</CommandButton>
+        </div>
+      ) : groupedSkills.length ? (
         <div className="mt-3 space-y-4">
           {groupedSkills.map((group) => (
             <section key={group.category}>

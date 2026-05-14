@@ -9,7 +9,7 @@ export default function Dashboard() {
       <Prompt path="~/portfolio/admin" cmd="ls ./manage" />
       <div className="mt-2">
         <OutputLine value="./projects   create, edit, delete project entries" />
-        <OutputLine value="./about      update profile, availability, and summary skills" />
+        <OutputLine value="./about      update profile, resume, and availability" />
         <OutputLine value="./skills     manage categorized skill data" />
         <OutputLine value="./messages   read and clear contact submissions" />
       </div>

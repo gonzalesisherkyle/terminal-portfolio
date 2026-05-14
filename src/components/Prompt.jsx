@@ -1,4 +1,4 @@
-export default function Prompt({ user = 'alex', host = 'devbox', path = '~', cmd = '' }) {
+export default function Prompt({ user = 'isher', host = 'devbox', path = '~', cmd = '' }) {
   return (
     <div className="flex flex-wrap items-baseline mb-0.5 font-mono text-sm min-w-0">
       <span className="text-term-green">{user}</span>

@@ -4,6 +4,7 @@ import Prompt from '../../components/Prompt';
 import OutputLine from '../../components/OutputLine';
 import TerminalField from '../../components/TerminalField';
 import CommandButton from '../../components/CommandButton';
+import TerminalLoader from '../../components/TerminalLoader';
 import { getAbout, updateAbout } from '../../api/about';
 import { getApiError } from '../../utils/validate';
 
@@ -25,10 +26,15 @@ const availabilityOptions = [
 
 export default function AdminAbout() {
   const [form, setForm] = useState(blankAbout);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [loadError, setLoadError] = useState('');
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
 
-  useEffect(() => {
+  const loadAbout = () => {
+    setLoading(true);
+    setLoadError('');
     getAbout()
       .then((about) => {
         if (about) {
@@ -43,7 +49,14 @@ export default function AdminAbout() {
           });
         }
       })
-      .catch(() => setForm(blankAbout));
+      .catch((requestError) => {
+        setLoadError(getApiError(requestError, 'About load failed'));
+      })
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadAbout();
   }, []);
 
   const updateField = (field, value) => {
@@ -58,6 +71,7 @@ export default function AdminAbout() {
     }
 
     try {
+      setSaving(true);
       const saved = await updateAbout(form);
       setForm({
         name: saved.name || '',
@@ -73,30 +87,46 @@ export default function AdminAbout() {
     } catch (requestError) {
       setError(getApiError(requestError, 'About save failed'));
       setStatus('');
+    } finally {
+      setSaving(false);
     }
   };
 
   return (
     <AdminShell path="~/portfolio/admin/about">
       <Prompt path="~/portfolio/admin/about" cmd="vim ./about/profile" />
-      <div className="grid gap-3 mt-3">
-        <div className="grid md:grid-cols-2 gap-3">
-          <TerminalField label="name" value={form.name} onChange={(value) => updateField('name', value)} />
-          <TerminalField label="title" value={form.title} onChange={(value) => updateField('title', value)} />
+      {loading ? (
+        <TerminalLoader value="loading profile..." />
+      ) : loadError ? (
+        <div className="grid gap-3 mt-3">
+          <OutputLine value={loadError} variant="red" />
+          <div>
+            <CommandButton onClick={loadAbout}>retry</CommandButton>
+          </div>
         </div>
-        <TerminalField label="bioSnippet" value={form.bioSnippet} onChange={(value) => updateField('bioSnippet', value)} multiline />
-        <TerminalField label="fullBio" value={form.bio} onChange={(value) => updateField('bio', value)} multiline />
-        <TerminalField label="resumeUrl" value={form.resumeUrl} onChange={(value) => updateField('resumeUrl', value)} placeholder="https://example.com/resume.pdf or /resume.pdf" />
-        <div className="grid md:grid-cols-2 gap-3">
-          <TerminalField label="location" value={form.location} onChange={(value) => updateField('location', value)} />
-          <TerminalField label="availability" value={form.availability} options={availabilityOptions} onChange={(value) => updateField('availability', value)} />
+      ) : (
+        <div className="grid gap-3 mt-3">
+          <div className="grid md:grid-cols-2 gap-3">
+            <TerminalField label="name" value={form.name} onChange={(value) => updateField('name', value)} />
+            <TerminalField label="title" value={form.title} onChange={(value) => updateField('title', value)} />
+          </div>
+          <TerminalField label="bioSnippet" value={form.bioSnippet} onChange={(value) => updateField('bioSnippet', value)} multiline />
+          <TerminalField label="fullBio" value={form.bio} onChange={(value) => updateField('bio', value)} multiline />
+          <TerminalField label="resumeUrl" value={form.resumeUrl} onChange={(value) => updateField('resumeUrl', value)} placeholder="https://example.com/resume.pdf or /resume.pdf" />
+          <div className="grid md:grid-cols-2 gap-3">
+            <TerminalField label="location" value={form.location} onChange={(value) => updateField('location', value)} />
+            <TerminalField label="availability" value={form.availability} options={availabilityOptions} onChange={(value) => updateField('availability', value)} />
+          </div>
+          <div>
+            <CommandButton onClick={handleSave} disabled={saving}>
+              {saving ? 'saving' : 'save'}
+            </CommandButton>
+          </div>
+          {saving ? <TerminalLoader value="saving profile..." /> : null}
+          {status ? <OutputLine value={status} variant="green" /> : null}
+          {error ? <OutputLine value={error} variant="red" /> : null}
         </div>
-        <div>
-          <CommandButton onClick={handleSave}>save</CommandButton>
-        </div>
-        {status ? <OutputLine value={status} variant="green" /> : null}
-        {error ? <OutputLine value={error} variant="red" /> : null}
-      </div>
+      )}
     </AdminShell>
   );
 }

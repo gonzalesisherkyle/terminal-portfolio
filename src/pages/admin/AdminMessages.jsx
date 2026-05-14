@@ -2,22 +2,34 @@ import { useEffect, useState } from 'react';
 import AdminShell from '../../components/AdminShell';
 import Prompt from '../../components/Prompt';
 import OutputLine from '../../components/OutputLine';
+import CommandButton from '../../components/CommandButton';
 import ContactMessageCard from '../../components/ContactMessageCard';
 import Pagination from '../../components/Pagination';
+import TerminalLoader from '../../components/TerminalLoader';
 import { deleteContact, getContacts, markAsRead } from '../../api/contact';
 import { usePagination } from '../../hooks/usePagination';
 import { getApiError } from '../../utils/validate';
 
 export default function AdminMessages() {
   const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
   const pagination = usePagination(messages, 6);
 
   const loadMessages = () => {
+    setLoading(true);
+    setLoadError('');
     getContacts()
-      .then(setMessages)
-      .catch(() => setMessages([]));
+      .then((messageData) => {
+        setMessages(messageData);
+      })
+      .catch((requestError) => {
+        setMessages([]);
+        setLoadError(getApiError(requestError, 'Messages load failed'));
+      })
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -57,7 +69,14 @@ export default function AdminMessages() {
       <Prompt path="~/portfolio/admin/messages" cmd="mail --list" />
       {status ? <OutputLine value={status} variant="green" /> : null}
       {error ? <OutputLine value={error} variant="red" /> : null}
-      {messages.length ? (
+      {loadError ? <OutputLine value={loadError} variant="red" /> : null}
+      {loading ? (
+        <TerminalLoader value="loading messages..." />
+      ) : loadError ? (
+        <div className="mt-3">
+          <CommandButton onClick={loadMessages}>retry</CommandButton>
+        </div>
+      ) : messages.length ? (
         <>
           <div className="mt-3">
             {pagination.items.map((message) => (
