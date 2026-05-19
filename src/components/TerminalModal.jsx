@@ -35,7 +35,7 @@ export default function TerminalModal({ open, path = '~', command = '', onClose,
           <span className="w-3 h-3 rounded bg-term-amber" />
           <span className="w-3 h-3 rounded bg-term-green" />
           <span className="ml-2 flex-1 text-term-dim text-xs tracking-wider truncate">
-            user@devbox - {path} - modal - 90x30
+            isher@devbox - {path} - modal - 90x30
           </span>
           <button
             type="button"
