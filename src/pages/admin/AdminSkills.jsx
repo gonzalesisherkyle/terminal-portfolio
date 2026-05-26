@@ -7,6 +7,7 @@ import CommandButton from '../../components/CommandButton';
 import AdminSkillRow from '../../components/AdminSkillRow';
 import TerminalModal from '../../components/TerminalModal';
 import TerminalLoader from '../../components/TerminalLoader';
+import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
 import { createSkill, deleteSkill, getSkills, updateSkill } from '../../api/skills';
 import { flattenSkillGroups, groupSkillsByCategory } from '../../utils/terminal';
 import { getApiError, validateSkillPayload } from '../../utils/validate';
@@ -21,6 +22,8 @@ export default function AdminSkills() {
   const [form, setForm] = useState(blankSkill);
   const [editingId, setEditingId] = useState('');
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [skillToDelete, setSkillToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [status, setStatus] = useState('');
@@ -112,19 +115,38 @@ export default function AdminSkills() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this skill?')) {
+  const openDeleteConfirmation = (skill) => {
+    setSkillToDelete(skill);
+    setStatus('');
+    setError('');
+  };
+
+  const closeDeleteConfirmation = () => {
+    if (deleting) {
+      return;
+    }
+
+    setSkillToDelete(null);
+    setError('');
+  };
+
+  const handleDelete = async () => {
+    if (!skillToDelete) {
       return;
     }
 
     try {
-      await deleteSkill(id);
+      setDeleting(true);
+      await deleteSkill(skillToDelete._id);
+      setSkillToDelete(null);
       setStatus('skill deleted');
       setError('');
       loadSkills();
     } catch (requestError) {
       setError(getApiError(requestError, 'Skill delete failed'));
       setStatus('');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -135,7 +157,7 @@ export default function AdminSkills() {
         <CommandButton onClick={openCreate} disabled={loading}>add skill</CommandButton>
       </div>
       {status ? <OutputLine value={status} variant="green" /> : null}
-      {!isEditorOpen && error ? <OutputLine value={error} variant="red" /> : null}
+      {!isEditorOpen && !skillToDelete && error ? <OutputLine value={error} variant="red" /> : null}
       {loadError ? <OutputLine value={loadError} variant="red" /> : null}
       {loading ? (
         <TerminalLoader value="loading skills..." />
@@ -153,7 +175,7 @@ export default function AdminSkills() {
                   key={skill._id}
                   skill={skill}
                   onEdit={() => handleEdit(skill)}
-                  onDelete={() => handleDelete(skill._id)}
+                  onDelete={() => openDeleteConfirmation(skill)}
                 />
               ))}
             </section>
@@ -180,6 +202,16 @@ export default function AdminSkills() {
           {error ? <OutputLine value={error} variant="red" /> : null}
         </div>
       </TerminalModal>
+      <DeleteConfirmationModal
+        open={Boolean(skillToDelete)}
+        path="~/portfolio/admin/skills"
+        command="rm ./skills/selected"
+        itemLabel={skillToDelete ? `skill "${skillToDelete.name}"` : 'selected skill'}
+        pending={deleting}
+        error={error}
+        onConfirm={handleDelete}
+        onClose={closeDeleteConfirmation}
+      />
     </AdminShell>
   );
 }

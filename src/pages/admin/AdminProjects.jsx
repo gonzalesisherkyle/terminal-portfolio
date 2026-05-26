@@ -8,6 +8,7 @@ import ProjectCard from '../../components/ProjectCard';
 import Pagination from '../../components/Pagination';
 import TerminalModal from '../../components/TerminalModal';
 import TerminalLoader from '../../components/TerminalLoader';
+import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
 import { createProject, deleteProject, getProjects, updateProject } from '../../api/projects';
 import { usePagination } from '../../hooks/usePagination';
 import { getApiError } from '../../utils/validate';
@@ -27,6 +28,8 @@ export default function AdminProjects() {
   const [form, setForm] = useState(blankProject);
   const [editingId, setEditingId] = useState('');
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [status, setStatus] = useState('');
@@ -122,19 +125,38 @@ export default function AdminProjects() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this project?')) {
+  const openDeleteConfirmation = (project) => {
+    setProjectToDelete(project);
+    setStatus('');
+    setError('');
+  };
+
+  const closeDeleteConfirmation = () => {
+    if (deleting) {
+      return;
+    }
+
+    setProjectToDelete(null);
+    setError('');
+  };
+
+  const handleDelete = async () => {
+    if (!projectToDelete) {
       return;
     }
 
     try {
-      await deleteProject(id);
+      setDeleting(true);
+      await deleteProject(projectToDelete._id);
+      setProjectToDelete(null);
       setStatus('project deleted');
       setError('');
       loadProjects();
     } catch (requestError) {
       setError(getApiError(requestError, 'Project delete failed'));
       setStatus('');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -145,7 +167,7 @@ export default function AdminProjects() {
         <CommandButton onClick={openCreate} disabled={loading}>add project</CommandButton>
       </div>
       {status ? <OutputLine value={status} variant="green" /> : null}
-      {!isEditorOpen && error ? <OutputLine value={error} variant="red" /> : null}
+      {!isEditorOpen && !projectToDelete && error ? <OutputLine value={error} variant="red" /> : null}
       {loadError ? <OutputLine value={loadError} variant="red" /> : null}
       {loading ? (
         <TerminalLoader value="loading projects..." />
@@ -160,7 +182,7 @@ export default function AdminProjects() {
               <ProjectCard project={project} />
               <div className="flex gap-2 mb-2">
                 <CommandButton onClick={() => handleEdit(project)}>edit</CommandButton>
-                <CommandButton onClick={() => handleDelete(project._id)} variant="danger">
+                <CommandButton onClick={() => openDeleteConfirmation(project)} variant="danger">
                   delete
                 </CommandButton>
               </div>
@@ -199,6 +221,16 @@ export default function AdminProjects() {
           {error ? <OutputLine value={error} variant="red" /> : null}
         </div>
       </TerminalModal>
+      <DeleteConfirmationModal
+        open={Boolean(projectToDelete)}
+        path="~/portfolio/admin/projects"
+        command="rm ./projects/selected"
+        itemLabel={projectToDelete ? `project "${projectToDelete.title}"` : 'selected project'}
+        pending={deleting}
+        error={error}
+        onConfirm={handleDelete}
+        onClose={closeDeleteConfirmation}
+      />
     </AdminShell>
   );
 }

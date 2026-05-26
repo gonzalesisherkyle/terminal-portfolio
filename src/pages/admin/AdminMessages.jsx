@@ -6,12 +6,15 @@ import CommandButton from '../../components/CommandButton';
 import ContactMessageCard from '../../components/ContactMessageCard';
 import Pagination from '../../components/Pagination';
 import TerminalLoader from '../../components/TerminalLoader';
+import DeleteConfirmationModal from '../../components/DeleteConfirmationModal';
 import { deleteContact, getContacts, markAsRead } from '../../api/contact';
 import { usePagination } from '../../hooks/usePagination';
 import { getApiError } from '../../utils/validate';
 
 export default function AdminMessages() {
   const [messages, setMessages] = useState([]);
+  const [messageToDelete, setMessageToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [status, setStatus] = useState('');
@@ -48,19 +51,38 @@ export default function AdminMessages() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this message?')) {
+  const openDeleteConfirmation = (message) => {
+    setMessageToDelete(message);
+    setStatus('');
+    setError('');
+  };
+
+  const closeDeleteConfirmation = () => {
+    if (deleting) {
+      return;
+    }
+
+    setMessageToDelete(null);
+    setError('');
+  };
+
+  const handleDelete = async () => {
+    if (!messageToDelete) {
       return;
     }
 
     try {
-      await deleteContact(id);
+      setDeleting(true);
+      await deleteContact(messageToDelete._id);
+      setMessageToDelete(null);
       setStatus('message deleted');
       setError('');
       loadMessages();
     } catch (requestError) {
       setError(getApiError(requestError, 'Message delete failed'));
       setStatus('');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -68,7 +90,7 @@ export default function AdminMessages() {
     <AdminShell path="~/portfolio/admin/messages">
       <Prompt path="~/portfolio/admin/messages" cmd="mail --list" />
       {status ? <OutputLine value={status} variant="green" /> : null}
-      {error ? <OutputLine value={error} variant="red" /> : null}
+      {!messageToDelete && error ? <OutputLine value={error} variant="red" /> : null}
       {loadError ? <OutputLine value={loadError} variant="red" /> : null}
       {loading ? (
         <TerminalLoader value="loading messages..." />
@@ -84,7 +106,7 @@ export default function AdminMessages() {
                 key={message._id}
                 message={message}
                 onRead={() => handleRead(message._id)}
-                onDelete={() => handleDelete(message._id)}
+                onDelete={() => openDeleteConfirmation(message)}
               />
             ))}
           </div>
@@ -99,6 +121,16 @@ export default function AdminMessages() {
       ) : (
         <OutputLine value="# no contact messages" variant="dim" />
       )}
+      <DeleteConfirmationModal
+        open={Boolean(messageToDelete)}
+        path="~/portfolio/admin/messages"
+        command="rm ./messages/selected"
+        itemLabel={messageToDelete ? `message from "${messageToDelete.name}"` : 'selected message'}
+        pending={deleting}
+        error={error}
+        onConfirm={handleDelete}
+        onClose={closeDeleteConfirmation}
+      />
     </AdminShell>
   );
 }

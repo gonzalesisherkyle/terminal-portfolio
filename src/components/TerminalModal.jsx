@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import Prompt from './Prompt';
 
-export default function TerminalModal({ open, path = '~', command = '', onClose, children }) {
+export default function TerminalModal({ open, path = '~', command = '', onClose, closeDisabled = false, children }) {
   useEffect(() => {
     if (!open) {
       return undefined;
@@ -9,7 +9,7 @@ export default function TerminalModal({ open, path = '~', command = '', onClose,
 
     const previousOverflow = document.body.style.overflow;
     const handleKeyDown = (event) => {
-      if (event.key === 'Escape') {
+      if (event.key === 'Escape' && !closeDisabled) {
         onClose();
       }
     };
@@ -21,7 +21,7 @@ export default function TerminalModal({ open, path = '~', command = '', onClose,
       document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [open, onClose]);
+  }, [open, onClose, closeDisabled]);
 
   if (!open) {
     return null;
@@ -40,7 +40,8 @@ export default function TerminalModal({ open, path = '~', command = '', onClose,
           <button
             type="button"
             onClick={onClose}
-            className="rounded-sm border border-term-border px-2 py-0.5 text-xs text-term-red transition-all duration-200 hover:border-term-red hover:text-term-bright"
+            disabled={closeDisabled}
+            className="rounded-sm border border-term-border px-2 py-0.5 text-xs text-term-red transition-all duration-200 hover:border-term-red hover:text-term-bright disabled:text-term-dim disabled:hover:border-term-border"
             aria-label="Close modal"
           >
             x
