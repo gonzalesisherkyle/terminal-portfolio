@@ -23,17 +23,11 @@ export default function TerminalShell({ currentPath }) {
   } = useTerminal();
 
   const [input, setInput] = useState('');
-  const shellBottomRef = useRef(null);
   const inputRef = useRef(null);
 
   if (isInitialLoading) {
     return null;
   }
-
-  // Auto scroll to bottom when history grows
-  useEffect(() => {
-    shellBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [history]);
 
   // Focus input on terminal area click
   const focusInput = () => {
@@ -406,8 +400,6 @@ export default function TerminalShell({ currentPath }) {
         <span>Themes: theme [green|amber|cyberpunk|dracula|mono]</span>
         <span>Type 'help' for commands</span>
       </div>
-
-      <div ref={shellBottomRef} />
     </div>
   );
 }
