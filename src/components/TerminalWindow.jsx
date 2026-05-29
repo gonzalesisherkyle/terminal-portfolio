@@ -1,3 +1,5 @@
+import TerminalShell from './TerminalShell';
+
 export default function TerminalWindow({ path = '~', children }) {
   return (
     <main className="max-w-4xl mx-auto px-4 pb-10 pt-5 font-mono">
@@ -11,6 +13,7 @@ export default function TerminalWindow({ path = '~', children }) {
       </div>
       <div className="bg-term-surface border border-term-border border-t-0 rounded-b px-5 py-5 shadow-[0_20px_60px_var(--shadow-terminal)]">
         {children}
+        <TerminalShell currentPath={path} />
       </div>
     </main>
   );

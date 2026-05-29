@@ -1,6 +1,9 @@
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import { PublicDataProvider } from './context/PublicDataContext';
+import { TerminalProvider, useTerminal } from './context/TerminalContext';
+import MatrixRain from './components/MatrixRain';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicDataGate from './components/PublicDataGate';
 import TerminalNav from './components/TerminalNav';
@@ -29,6 +32,15 @@ function AppLayout() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
   const terminalPath = publicRoutePaths[location.pathname] || '~/portfolio';
+  const { matrixEnabled, crtEnabled } = useTerminal();
+
+  useEffect(() => {
+    if (crtEnabled) {
+      document.body.classList.add('crt-enabled');
+    } else {
+      document.body.classList.remove('crt-enabled');
+    }
+  }, [crtEnabled]);
 
   const routes = (
     <Routes>
@@ -83,6 +95,7 @@ function AppLayout() {
 
   return (
     <>
+      {matrixEnabled && !isAdminRoute ? <MatrixRain /> : null}
       {!isAdminRoute ? <TerminalNav /> : null}
       {isAdminRoute ? routes : <PublicDataGate path={terminalPath}>{routes}</PublicDataGate>}
     </>
@@ -94,7 +107,9 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <PublicDataProvider>
-          <AppLayout />
+          <TerminalProvider>
+            <AppLayout />
+          </TerminalProvider>
         </PublicDataProvider>
       </AuthProvider>
     </BrowserRouter>

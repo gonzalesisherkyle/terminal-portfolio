@@ -4,18 +4,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        'term-bg': '#0d0d0d',
-        'term-surface': '#111111',
-        'term-border': '#1f1f1f',
-        'term-green': '#39ff14',
-        'term-green-dim': '#1a7a08',
-        'term-green-mid': '#2db80a',
-        'term-amber': '#ffb300',
-        'term-cyan': '#00e5ff',
-        'term-red': '#ff4444',
-        'term-text': '#c8c8c8',
-        'term-dim': '#555555',
-        'term-bright': '#e8e8e8'
+        'term-bg': 'var(--bg)',
+        'term-surface': 'var(--surface)',
+        'term-border': 'var(--border)',
+        'term-green': 'var(--green)',
+        'term-green-dim': 'var(--green-dim)',
+        'term-green-mid': 'var(--green-muted)',
+        'term-amber': 'var(--amber)',
+        'term-cyan': 'var(--cyan)',
+        'term-red': 'var(--red)',
+        'term-text': 'var(--text)',
+        'term-dim': 'var(--text-dim)',
+        'term-bright': 'var(--text-bright)'
       },
       fontFamily: {
         mono: ['"JetBrains Mono"', '"Share Tech Mono"', 'monospace']
