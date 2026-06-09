@@ -50,6 +50,11 @@ function AppLayout() {
     }
   }, [matrixEnabled, isAdminRoute]);
 
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   const routes = (
     <Routes>
       <Route path="/" element={<Home />} />

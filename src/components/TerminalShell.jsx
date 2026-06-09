@@ -26,8 +26,14 @@ export default function TerminalShell({ currentPath }) {
   const inputRef = useRef(null);
   const bottomRef = useRef(null);
 
+  const isFirstRender = useRef(true);
+
   // Auto-scroll to bottom on history change
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [history]);
 
