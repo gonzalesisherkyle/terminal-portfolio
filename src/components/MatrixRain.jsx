@@ -83,7 +83,7 @@ export default function MatrixRain() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-[-1] opacity-[0.25]"
+      className="fixed inset-0 pointer-events-none z-[-1] opacity-[0.45] md:opacity-[0.25]"
       style={{ backgroundColor: activeBg }}
     />
   );

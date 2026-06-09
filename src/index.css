@@ -106,6 +106,24 @@
   --shadow-terminal: rgba(200, 200, 200, 0.4);
 }
 
+/* Semi-transparent surface backgrounds when Matrix Code Rain is active, enabling visibility on mobile and desktop */
+.matrix-enabled.theme-green {
+  --surface: rgba(18, 22, 18, 0.85);
+}
+.matrix-enabled.theme-amber {
+  --surface: rgba(23, 19, 14, 0.85);
+}
+.matrix-enabled.theme-cyberpunk {
+  --surface: rgba(16, 6, 30, 0.82);
+}
+.matrix-enabled.theme-dracula {
+  --surface: rgba(30, 31, 41, 0.85);
+}
+.matrix-enabled.theme-mono {
+  --surface: rgba(240, 240, 240, 0.85);
+}
+
+
 * {
   box-sizing: border-box;
   scrollbar-color: var(--green-dim) var(--surface);

@@ -42,6 +42,14 @@ function AppLayout() {
     }
   }, [crtEnabled]);
 
+  useEffect(() => {
+    if (matrixEnabled && !isAdminRoute) {
+      document.body.classList.add('matrix-enabled');
+    } else {
+      document.body.classList.remove('matrix-enabled');
+    }
+  }, [matrixEnabled, isAdminRoute]);
+
   const routes = (
     <Routes>
       <Route path="/" element={<Home />} />
