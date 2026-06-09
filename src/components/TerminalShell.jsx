@@ -24,6 +24,12 @@ export default function TerminalShell({ currentPath }) {
 
   const [input, setInput] = useState('');
   const inputRef = useRef(null);
+  const bottomRef = useRef(null);
+
+  // Auto-scroll to bottom on history change
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [history]);
 
   if (isInitialLoading) {
     return null;
@@ -50,27 +56,27 @@ export default function TerminalShell({ currentPath }) {
         output = (
           <div className="space-y-1 text-term-text mt-1">
             <p className="text-term-green font-bold">Terminal Shell v1.2.0 - Available Commands:</p>
-            <div className="grid grid-cols-[140px_1fr] gap-y-1 text-xs pl-2 font-mono">
+            <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-y-1 gap-x-2 text-xs pl-2 font-mono">
               <span className="text-term-cyan">ls [dir]</span>
-              <span className="text-term-dim">List directory contents</span>
+              <span className="text-term-dim pl-2 sm:pl-0">List directory contents</span>
               <span className="text-term-cyan">cd &lt;dir&gt;</span>
-              <span className="text-term-dim">Change page (home, projects, about, skills, contact)</span>
+              <span className="text-term-dim pl-2 sm:pl-0">Change page (home, projects, about, skills, contact)</span>
               <span className="text-term-cyan">cat &lt;file&gt;</span>
-              <span className="text-term-dim">View text/markdown file contents</span>
+              <span className="text-term-dim pl-2 sm:pl-0">View text/markdown file contents</span>
               <span className="text-term-cyan">theme &lt;name&gt;</span>
-              <span className="text-term-dim">Switch style ({validThemes.join(', ')})</span>
+              <span className="text-term-dim pl-2 sm:pl-0">Switch style ({validThemes.join(', ')})</span>
               <span className="text-term-cyan">crt</span>
-              <span className="text-term-dim">Toggle CRT scanlines and screen flicker</span>
+              <span className="text-term-dim pl-2 sm:pl-0">Toggle CRT scanlines and screen flicker</span>
               <span className="text-term-cyan">matrix</span>
-              <span className="text-term-dim">Toggle Matrix falling code backdrop</span>
+              <span className="text-term-dim pl-2 sm:pl-0">Toggle Matrix falling code backdrop</span>
               <span className="text-term-cyan">neofetch</span>
-              <span className="text-term-dim">Show developer profile & system specifications</span>
+              <span className="text-term-dim pl-2 sm:pl-0">Show developer profile & system specifications</span>
               <span className="text-term-cyan">contact</span>
-              <span className="text-term-dim">Show developer email & socials</span>
+              <span className="text-term-dim pl-2 sm:pl-0">Show developer email & socials</span>
               <span className="text-term-cyan">clear</span>
-              <span className="text-term-dim">Clear screen history</span>
+              <span className="text-term-dim pl-2 sm:pl-0">Clear screen history</span>
               <span className="text-term-cyan">sudo</span>
-              <span className="text-term-dim">Execute a superuser command</span>
+              <span className="text-term-dim pl-2 sm:pl-0">Execute a superuser command</span>
             </div>
           </div>
         );
@@ -379,9 +385,9 @@ export default function TerminalShell({ currentPath }) {
       ))}
 
       {/* Interactive Active Prompt */}
-      <div className="flex items-center min-w-0">
+      <div className="flex flex-wrap items-center gap-y-1 min-w-0 w-full">
         <Prompt path={currentPath} />
-        <form onSubmit={handleCommandSubmit} className="flex-1 min-w-0 flex items-center">
+        <form onSubmit={handleCommandSubmit} className="flex-1 min-w-[120px] flex items-center">
           <input
             ref={inputRef}
             type="text"
@@ -396,10 +402,11 @@ export default function TerminalShell({ currentPath }) {
         </form>
       </div>
 
-      <div className="text-term-dim text-[10px] mt-2 select-none pointer-events-none opacity-50 flex justify-between">
+      <div className="text-term-dim text-[10px] mt-3 select-none pointer-events-none opacity-50 flex flex-col sm:flex-row gap-1 sm:gap-0 justify-between">
         <span>Themes: theme [green|amber|cyberpunk|dracula|mono]</span>
         <span>Type 'help' for commands</span>
       </div>
+      <div ref={bottomRef} />
     </div>
   );
 }
