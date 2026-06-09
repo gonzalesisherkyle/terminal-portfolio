@@ -15,6 +15,7 @@ const blankAbout = {
   bioSnippet: '',
   resumeUrl: '',
   location: '',
+  email: '',
   availability: 'available'
 };
 
@@ -45,6 +46,7 @@ export default function AdminAbout() {
             bioSnippet: about.bioSnippet || '',
             resumeUrl: about.resumeUrl || '',
             location: about.location || '',
+            email: about.email || '',
             availability: about.availability || 'available'
           });
         }
@@ -80,6 +82,7 @@ export default function AdminAbout() {
         bioSnippet: saved.bioSnippet || '',
         resumeUrl: saved.resumeUrl || '',
         location: saved.location || '',
+        email: saved.email || '',
         availability: saved.availability || 'available'
       });
       setStatus('about updated');
@@ -113,8 +116,9 @@ export default function AdminAbout() {
           <TerminalField label="bioSnippet" value={form.bioSnippet} onChange={(value) => updateField('bioSnippet', value)} multiline />
           <TerminalField label="fullBio" value={form.bio} onChange={(value) => updateField('bio', value)} multiline />
           <TerminalField label="resumeUrl" value={form.resumeUrl} onChange={(value) => updateField('resumeUrl', value)} placeholder="https://example.com/resume.pdf or /resume.pdf" />
-          <div className="grid md:grid-cols-2 gap-3">
+          <div className="grid md:grid-cols-3 gap-3">
             <TerminalField label="location" value={form.location} onChange={(value) => updateField('location', value)} />
+            <TerminalField label="email" value={form.email} onChange={(value) => updateField('email', value)} />
             <TerminalField label="availability" value={form.availability} options={availabilityOptions} onChange={(value) => updateField('availability', value)} />
           </div>
           <div>

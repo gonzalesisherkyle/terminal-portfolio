@@ -23,6 +23,7 @@ export default function About() {
       <StatusBar status={about.availability} location={about.location} />
       <OutputLine label="name" value={about.name} variant="bright" />
       <OutputLine label="title" value={about.title} variant="cyan" />
+      {about.email && <OutputLine label="email" value={about.email} variant="amber" />}
       <ResumeLink href={about.resumeUrl} />
       <OutputLine label="bio" value={about.bio} multiline justify />
       <TerminalReady path="~/portfolio/about" />
