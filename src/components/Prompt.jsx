@@ -1,4 +1,6 @@
-export default function Prompt({ user = 'isher', host = 'devbox', path = '~', cmd = '' }) {
+import { SHELL_HOST, SHELL_USER } from '../constants/shell';
+
+export default function Prompt({ user = SHELL_USER, host = SHELL_HOST, path = '~', cmd = '' }) {
   return (
     <div className="flex flex-wrap items-baseline mb-0.5 font-mono text-sm min-w-0">
       <span className="whitespace-nowrap">

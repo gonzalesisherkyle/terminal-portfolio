@@ -17,14 +17,14 @@ export default function Skills() {
 
   if (flatSkills.length === 0) {
     return (
-      <TerminalWindow path="~/portfolio/skills">
+      <TerminalWindow path="~/portfolio/skills" title="Skills">
         <TerminalReady path="~/portfolio/skills" cmd="ls ./skills # empty" />
       </TerminalWindow>
     );
   }
 
   return (
-    <TerminalWindow path="~/portfolio/skills">
+    <TerminalWindow path="~/portfolio/skills" title="Skills">
       <Prompt path="~/portfolio/skills" cmd="find ./skills -type skill" />
       <div className="mt-3 space-y-4">
         {pageGroups.map((group) => (

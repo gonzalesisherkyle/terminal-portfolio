@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useTerminal } from '../context/TerminalContext';
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 const themeColors = {
   green: '#39ff14',
@@ -17,36 +18,45 @@ const bgColors = {
   mono: '#fafafa'
 };
 
+const FRAME_INTERVAL = 33;
+
 export default function MatrixRain() {
   const { theme } = useTerminal();
+  const prefersReducedMotion = usePrefersReducedMotion();
   const canvasRef = useRef(null);
 
   useEffect(() => {
+    if (prefersReducedMotion) {
+      return undefined;
+    }
+
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) return undefined;
 
     const ctx = canvas.getContext('2d');
     let animationFrameId;
+    let lastFrame = 0;
 
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      columns = Math.floor(canvas.width / fontSize) + 1;
+      drops = Array(columns).fill(1);
     };
-
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
 
     const chars = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const charArr = chars.split('');
     const fontSize = 14;
-    let columns = Math.floor(canvas.width / fontSize) + 1;
+    let columns = Math.floor(window.innerWidth / fontSize) + 1;
     let drops = Array(columns).fill(1);
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
 
     const activeColor = themeColors[theme] || themeColors.green;
     const activeBg = bgColors[theme] || bgColors.green;
 
     const draw = () => {
-      // Create trailing blur effect
       ctx.fillStyle = activeBg === '#fafafa' ? 'rgba(250, 250, 250, 0.08)' : 'rgba(13, 13, 13, 0.06)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -58,10 +68,8 @@ export default function MatrixRain() {
         const x = i * fontSize;
         const y = drops[i] * fontSize;
 
-        // Draw character
         ctx.fillText(text, x, y);
 
-        // Reset drop to top with slight random offset
         if (y > canvas.height && Math.random() > 0.975) {
           drops[i] = 0;
         }
@@ -69,20 +77,32 @@ export default function MatrixRain() {
       }
     };
 
-    const interval = setInterval(draw, 33);
+    const render = (timestamp) => {
+      animationFrameId = requestAnimationFrame(render);
+      if (document.hidden) return;
+      if (timestamp - lastFrame < FRAME_INTERVAL) return;
+      lastFrame = timestamp;
+      draw();
+    };
+
+    animationFrameId = requestAnimationFrame(render);
 
     return () => {
-      clearInterval(interval);
+      cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', resizeCanvas);
     };
-  }, [theme]);
+  }, [theme, prefersReducedMotion]);
 
   const activeBg = bgColors[theme] || bgColors.green;
-  const isLight = theme === 'mono';
+
+  if (prefersReducedMotion) {
+    return null;
+  }
 
   return (
     <canvas
       ref={canvasRef}
+      aria-hidden="true"
       className="fixed inset-0 pointer-events-none z-[-1] opacity-[0.45] md:opacity-[0.25]"
       style={{ backgroundColor: activeBg }}
     />

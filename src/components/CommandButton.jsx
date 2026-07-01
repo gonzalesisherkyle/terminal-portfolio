@@ -9,7 +9,7 @@ export default function CommandButton({ children, onClick, type = 'button', disa
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={`rounded-sm border border-term-border px-3 py-1.5 font-mono text-xs transition-all duration-200 disabled:text-term-dim disabled:hover:border-term-border ${variantClass}`}
+      className={`inline-flex min-h-[44px] items-center justify-center rounded-sm border border-term-border px-4 py-2 font-mono text-xs transition-all duration-200 disabled:text-term-dim disabled:hover:border-term-border ${variantClass}`}
     >
       {children}
     </button>

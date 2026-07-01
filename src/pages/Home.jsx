@@ -18,14 +18,14 @@ export default function Home() {
 
   if (!about && !featuredProjects.length) {
     return (
-      <TerminalWindow path="~/portfolio/home">
+      <TerminalWindow path="~/portfolio/home" title="Home">
         <TerminalReady path="~/portfolio/home" cmd="cat ./home # empty" />
       </TerminalWindow>
     );
   }
 
   return (
-    <TerminalWindow path="~/portfolio/home">
+    <TerminalWindow path="~/portfolio/home" title="Home">
       <Prompt path="~/portfolio/home" cmd="boot ./profile" />
       {about ? (
         <>

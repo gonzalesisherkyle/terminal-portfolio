@@ -11,14 +11,14 @@ export default function About() {
 
   if (!about) {
     return (
-      <TerminalWindow path="~/portfolio/about">
+      <TerminalWindow path="~/portfolio/about" title="About">
         <TerminalReady path="~/portfolio/about" cmd="cat ./about # empty" />
       </TerminalWindow>
     );
   }
 
   return (
-    <TerminalWindow path="~/portfolio/about">
+    <TerminalWindow path="~/portfolio/about" title="About">
       <Prompt path="~/portfolio/about" cmd="cat ./bio" />
       <StatusBar status={about.availability} location={about.location} />
       <OutputLine label="name" value={about.name} variant="bright" />

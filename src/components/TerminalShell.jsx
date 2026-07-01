@@ -62,7 +62,7 @@ export default function TerminalShell({ currentPath }) {
         output = (
           <div className="space-y-1 text-term-text mt-1">
             <p className="text-term-green font-bold">Terminal Shell v1.2.0 - Available Commands:</p>
-            <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-y-1 gap-x-2 text-xs pl-2 font-mono">
+            <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-x-3 gap-y-1 text-xs pl-2 font-mono">
               <span className="text-term-cyan">ls [dir]</span>
               <span className="text-term-dim pl-2 sm:pl-0">List directory contents</span>
               <span className="text-term-cyan">cd &lt;dir&gt;</span>
@@ -80,9 +80,7 @@ export default function TerminalShell({ currentPath }) {
               <span className="text-term-cyan">contact</span>
               <span className="text-term-dim pl-2 sm:pl-0">Show developer email & socials</span>
               <span className="text-term-cyan">clear</span>
-              <span className="text-term-dim pl-2 sm:pl-0">Clear screen history</span>
-              <span className="text-term-cyan">sudo</span>
-              <span className="text-term-dim pl-2 sm:pl-0">Execute a superuser command</span>
+              <span className="text-term-dim">Clear screen history</span>
             </div>
           </div>
         );
@@ -349,13 +347,15 @@ export default function TerminalShell({ currentPath }) {
         break;
       }
 
-      case 'sudo':
-        output = (
-          <span className="text-term-red block mt-1">
-            {about?.name?.toLowerCase() || 'owner'} is not in the sudoers file. This incident will be reported.
-          </span>
-        );
+      case 'make': {
+        const sub = args.join(' ').toLowerCase().trim();
+        if (sub === 'sandwich') {
+          output = <span className="text-term-red block mt-1">What? Make it yourself.</span>;
+        } else {
+          output = <span className="text-term-dim block mt-1">make: nothing to be done for '{sub}'.</span>;
+        }
         break;
+      }
 
       default:
         output = (
@@ -384,7 +384,11 @@ export default function TerminalShell({ currentPath }) {
       )}
 
       {history.map((h, index) => (
-        <div key={index} className="mb-3 animate-fadeUp">
+        <div
+          key={index}
+          className="mb-3 animate-fadeUp"
+          style={{ animationDelay: `${Math.min(index, 6) * 30}ms` }}
+        >
           <Prompt path={h.path} cmd={h.command} />
           {h.output}
         </div>
@@ -393,13 +397,17 @@ export default function TerminalShell({ currentPath }) {
       {/* Interactive Active Prompt */}
       <div className="flex flex-wrap items-center gap-y-1 min-w-0 w-full">
         <Prompt path={currentPath} />
-        <form onSubmit={handleCommandSubmit} className="flex-1 min-w-[120px] flex items-center">
+        <form onSubmit={handleCommandSubmit} className="flex-1 min-w-0 flex items-center">
+          <label htmlFor="terminal-command-input" className="sr-only">
+            Terminal command input
+          </label>
           <input
+            id="terminal-command-input"
             ref={inputRef}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="flex-1 bg-transparent border-none outline-none font-mono text-term-bright ml-1 text-sm focus:ring-0 focus:outline-none p-0"
+            className="flex-1 bg-transparent border-none font-mono text-term-bright ml-1 text-base sm:text-sm p-0 rounded-sm"
             placeholder="Type 'help'..."
             autoComplete="off"
             autoCapitalize="off"

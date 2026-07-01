@@ -13,6 +13,14 @@ export function validateContactPayload(payload) {
   return '';
 }
 
+export function validateContactFields(payload) {
+  const errors = {};
+  if (!payload.name.trim()) errors.name = 'Name is required';
+  if (!isValidEmail(payload.email)) errors.email = 'Enter a valid email address (e.g. ada@example.com)';
+  if (!payload.message.trim()) errors.message = 'Message is required';
+  return errors;
+}
+
 export function validateSkillPayload(payload) {
   if (!payload.name.trim()) return 'Skill name is required';
   if (!payload.category.trim()) return 'Skill category is required';

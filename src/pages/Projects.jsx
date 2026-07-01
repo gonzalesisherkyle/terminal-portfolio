@@ -13,14 +13,14 @@ export default function Projects() {
 
   if (projects.length === 0) {
     return (
-      <TerminalWindow path="~/portfolio/projects">
+      <TerminalWindow path="~/portfolio/projects" title="Projects">
         <TerminalReady path="~/portfolio/projects" cmd="ls ./projects # empty" />
       </TerminalWindow>
     );
   }
 
   return (
-    <TerminalWindow path="~/portfolio/projects">
+    <TerminalWindow path="~/portfolio/projects" title="Projects">
       <Prompt path="~/portfolio/projects" cmd="ls ./projects --featured-first" />
       <div className="mt-2">
         {pagination.items.map((project) => (
